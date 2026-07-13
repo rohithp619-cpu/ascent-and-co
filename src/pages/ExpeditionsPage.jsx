@@ -98,6 +98,7 @@ function TrekCard({ trek, index }) {
         <div style={{ position:'absolute', inset:0, backfaceVisibility:'hidden', WebkitBackfaceVisibility:'hidden' }}
           className="rounded-2xl overflow-hidden group">
           <img src={trek.image} alt={trek.name} loading="lazy"
+            onError={(e) => { e.target.onerror = null; e.target.src = 'https://commons.wikimedia.org/wiki/Special:FilePath/Dughla_Pass%2C_Sagarmatha_National_Park%2C_Nepal.jpg?width=1200' }}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
 
           {/* Gradient */}

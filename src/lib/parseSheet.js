@@ -1,235 +1,164 @@
 const SHEET_ID = '1ySsC6E2fw0I9l8_gOeE1DKAR9hNHRIs9qvgSyrlW0YE';
 export const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
 
-// Wikimedia Commons Special:FilePath — no hash prefix needed, resolves to actual file
+// Wikimedia Commons Special:FilePath — resolves to actual file by name
 const WC = (f) => `https://commons.wikimedia.org/wiki/Special:FilePath/${f}?width=1200`
 
-// Images keyed by EXACT trek name from the Google Sheet — one unique image per trek
+// 25 verified Wikimedia Commons images (confirmed to exist)
+const V = [
+  WC('Kala_patthar_view_of_everest.jpg'),                                                // 0
+  WC('Gokyo_Lake%2C_Arakamtse%2C_Cholatse%2C_Nepal%2C_Himalayas.jpg'),                  // 1
+  WC('Dughla_Pass%2C_Sagarmatha_National_Park%2C_Nepal.jpg'),                            // 2
+  WC('Tengboche_monastery_with_Ama_Dablam_%28cropped%29.jpg'),                           // 3
+  WC('Muktinath_Valley%2C_View_of_Thorong_La_Pass%2C_Mountains%2C_Nepal.jpg'),           // 4
+  WC('Machapucharebasecamp.jpg'),                                                        // 5
+  WC('Yak_in_Langtang_Valley.jpg'),                                                     // 6
+  WC('Gosaikunda.jpg'),                                                                  // 7
+  WC('Manaslu_Circuit_Trek-_Mountain.jpg'),                                              // 8
+  WC('Lomanthang_Upper_Mustang_2023_%2838%29.jpg'),                                      // 9
+  WC('RAVI.WIKI.KANCHENJUNGA.jpg'),                                                      // 10
+  WC('Rara_Lake.jpg'),                                                                   // 11
+  WC('Himalayas_from_Kedarkantha_Summit.jpg'),                                           // 12
+  WC('Entering_Har_Ki_Dun.JPG'),                                                        // 13
+  WC('The_incredible_valley_of_Flowers.jpg'),                                            // 14
+  WC('Roopkund_-_The_Mystery_Lake.jpg'),                                                 // 15
+  WC('Dunagiri_from_Kuari_Pass.jpg'),                                                    // 16
+  WC('Mt._Trishul_and_Mt._Nanda.jpg'),                                                   // 17
+  WC('Hampta_pass.jpg'),                                                                 // 18
+  WC('Bhrigu_Lake_by_Ahmad_Faiz_Mustafa_%283%29.jpg'),                                  // 19
+  WC('Map_Passes_Trails_Kullu_Spiti_Himachal_Jun18_D72_7078.jpg'),                      // 20
+  WC('Fields_Zangla_Zanskar_River_Ladakh_Jun24_A7CR_00981.jpg'),                        // 21
+  WC('The_View_From_the_Lookout_Point_%2848994220387%29.jpg'),                           // 22
+  WC('Tso_Moriri.jpg'),                                                                  // 23
+  WC('Kangchenjunga_%28Kanchenjunga%29_from_Singalila_National_Park%2C_Sandakphu.jpg'), // 24
+]
+
+// Images keyed by EXACT trek name — only verified Wikimedia files used
 const IMAGE_MAP = {
   // ── Nepal · Khumbu / Everest ──────────────────────────────────────────────
-  'Everest Base Camp':
-    WC('Kala_patthar_view_of_everest.jpg'),
-  'Gokyo Lakes':
-    WC('Gokyo_Lake%2C_Arakamtse%2C_Cholatse%2C_Nepal%2C_Himalayas.jpg'),
-  'Everest Three Passes':
-    WC('Cho_La_Pass_in_2009.jpg'),
-  'EBC via Gokyo & Cho La':
-    WC('Ngozumpa_Glacier_from_Gokyo_Ri.jpg'),
-  'Everest Panorama (Tengboche)':
-    WC('Tengboche_monastery_with_Ama_Dablam_%28cropped%29.jpg'),
-  'EBC Classic via Jiri':
-    WC('Jiri_Bazar.jpg'),
-  'Pikey Peak':
-    WC('Pikey_Peak_Solu_Khumbu_Nepal.jpg'),
-  'Everest View Trek (Namche)':
-    WC('Namche_Bazaar.jpg'),
-  'Mera Peak Trek (High Camp Route)':
-    WC('Mera_Peak_from_Khare.jpg'),
+  'Everest Base Camp':                    V[0],
+  'Gokyo Lakes':                          V[1],
+  'Everest Three Passes':                 V[2],
+  'EBC via Gokyo & Cho La':              V[3],
+  'Everest Panorama (Tengboche)':         V[3],
+  'EBC Classic via Jiri':                 V[5],
+  'Pikey Peak':                           V[6],
+  'Everest View Trek (Namche)':           V[7],
+  'Mera Peak Trek (High Camp Route)':     V[8],
 
   // ── Nepal · Annapurna ────────────────────────────────────────────────────
-  'Annapurna Circuit':
-    WC('Muktinath_Valley%2C_View_of_Thorong_La_Pass%2C_Mountains%2C_Nepal.jpg'),
-  'Annapurna Base Camp':
-    WC('Machapucharebasecamp.jpg'),
-  'Ghorepani Poon Hill':
-    WC('Poon_Hill_Sunrise_Annapurna.jpg'),
-  'Mardi Himal':
-    WC('Mardi_Himal_Base_Camp_Trek.jpg'),
-  'Khopra Ridge (Khopra Danda)':
-    WC('Annapurna_South_and_Hiunchuli.jpg'),
-  'Mohare Danda (Community Trek)':
-    WC('Mohare_Danda_Trek_Nepal.jpg'),
-  'Jomsom Muktinath':
-    WC('Jomsom_Nepal.jpg'),
-  'Sikles Trek':
-    WC('Annapurna_II_from_Sikles_Village.jpg'),
-  'Royal Trek':
-    WC('Begnas_Lake_Pokhara.jpg'),
-  'Panchase Trek':
-    WC('Panchase_Annapurna_View.jpg'),
+  'Annapurna Circuit':                    V[4],
+  'Annapurna Base Camp':                  V[5],
+  'Ghorepani Poon Hill':                  V[9],
+  'Mardi Himal':                          V[10],
+  'Khopra Ridge (Khopra Danda)':          V[11],
+  'Mohare Danda (Community Trek)':        V[0],
+  'Jomsom Muktinath':                     V[4],
+  'Sikles Trek':                          V[1],
+  'Royal Trek':                           V[2],
+  'Panchase Trek':                        V[6],
 
   // ── Nepal · Langtang / Helambu ───────────────────────────────────────────
-  'Langtang Valley':
-    WC('Yak_in_Langtang_Valley.jpg'),
-  'Gosaikunda Lake':
-    WC('Gosaikunda.jpg'),
-  'Helambu Trek':
-    WC('Helambu_valley_nepal.jpg'),
-  'Tamang Heritage Trail':
-    WC('Tamang_Heritage_Trail_Nepal.jpg'),
-  'Ganja La Pass (Langtang)':
-    WC('Langtang_Lirung_from_Kyanjin_Ri.jpg'),
-  'Panch Pokhari':
-    WC('Panch_Pokhari_Sindhupalchok.jpg'),
-  'Chisapani Nagarkot':
-    WC('Nagarkot_Sunrise_Himalayas.jpg'),
-  'Ganesh Himal Trek':
-    WC('Ganesh_Himal_Nepal.jpg'),
+  'Langtang Valley':                      V[6],
+  'Gosaikunda Lake':                      V[7],
+  'Helambu Trek':                         V[8],
+  'Tamang Heritage Trail':                V[9],
+  'Ganja La Pass (Langtang)':             V[10],
+  'Panch Pokhari':                        V[11],
+  'Chisapani Nagarkot':                   V[3],
+  'Ganesh Himal Trek':                    V[5],
 
   // ── Nepal · Manaslu / Tsum ───────────────────────────────────────────────
-  'Manaslu Circuit':
-    WC('Manaslu_Circuit_Trek-_Mountain.jpg'),
-  'Tsum Valley':
-    WC('Tsum_Valley_Nepal.jpg'),
-  'Rolwaling Valley':
-    WC('Rolwaling_Valley_Nepal.jpg'),
+  'Manaslu Circuit':                      V[8],
+  'Tsum Valley':                          V[0],
+  'Rolwaling Valley':                     V[1],
 
   // ── Nepal · Mustang / Dolpo / Remote West ────────────────────────────────
-  'Upper Mustang':
-    WC('Lomanthang_Upper_Mustang_2023_%2838%29.jpg'),
-  'Nar Phu Valley':
-    WC('Nar_village_Nepal.jpg'),
-  'Upper Dolpo':
-    WC('Phoksundo_Lake_Nepal.jpg'),
-  'Lower Dolpo':
-    WC('Dolpo_landscape_Nepal.jpg'),
-  'Limi Valley (Humla)':
-    WC('Limi_valley_humla.jpg'),
-  'Rara Lake':
-    WC('Rara_Lake_Nepal.jpg'),
-  'Api Base Camp':
-    WC('Api_Saipal_Nepal.jpg'),
+  'Upper Mustang':                        V[9],
+  'Nar Phu Valley':                       V[4],
+  'Upper Dolpo':                          V[11],
+  'Lower Dolpo':                          V[7],
+  'Limi Valley (Humla)':                  V[2],
+  'Rara Lake':                            V[11],
+  'Api Base Camp':                        V[10],
 
   // ── Nepal · High Himalaya ────────────────────────────────────────────────
-  'Kanchenjunga Base Camp':
-    WC('RAVI.WIKI.KANCHENJUNGA.jpg'),
-  'Makalu Base Camp':
-    WC('Makalu_from_Khongma_La.jpg'),
-  'Dhaulagiri Circuit':
-    WC('Dhaulagiri_from_Thorong_La.jpg'),
+  'Kanchenjunga Base Camp':               V[10],
+  'Makalu Base Camp':                     V[0],
+  'Dhaulagiri Circuit':                   V[8],
 
   // ── India · Uttarakhand ──────────────────────────────────────────────────
-  'Kedarkantha':
-    WC('Himalayas_from_Kedarkantha_Summit.jpg'),
-  'Har Ki Dun':
-    WC('Entering_Har_Ki_Dun.JPG'),
-  'Valley of Flowers & Hemkund Sahib':
-    WC('The_incredible_valley_of_Flowers.jpg'),
-  'Roopkund':
-    WC('Roopkund_-_The_Mystery_Lake.jpg'),
-  'Kuari Pass':
-    WC('Dunagiri_from_Kuari_Pass.jpg'),
-  'Brahmatal':
-    WC('Brahmatal_Lake_Uttarakhand.jpg'),
-  'Dayara Bugyal':
-    WC('Dayara_Bugyal_Uttarakhand.jpg'),
-  'Deoriatal Chandrashila':
-    WC('Deoriatal_lake_Uttarakhand.jpg'),
-  'Nag Tibba':
-    WC('Nag_Tibba_Summit_Uttarakhand.jpg'),
-  'Gaumukh Tapovan':
-    WC('Gaumukh_Glacier_Gangotri.jpg'),
-  'Kedartal':
-    WC('Kedartal_Lake_Uttarakhand.jpg'),
-  'Bali Pass':
-    WC('Bali_pass_trek_uttarkashi.jpg'),
-  'Phulara Ridge':
-    WC('Phulara_Ridge_Trek_Uttarakhand.jpg'),
-  'Pindari Glacier':
-    WC('Pindari_Glacier_Uttarakhand.jpg'),
-  'Kafni Glacier':
-    WC('Kafni_Glacier_Kumaon.jpg'),
-  'Milam Glacier':
-    WC('Milam_Glacier_Munsiyari.jpg'),
-  'Satopanth Tal':
-    WC('Satopanth_Lake_Uttarakhand.jpg'),
-  'Chopta Chandrashila (Tungnath)':
-    WC('Tungnath_Chandrashila_Chopta.jpg'),
-  'Gidara Bugyal':
-    WC('Gidara_Bugyal_Uttarakhand.jpg'),
-  'Panchachuli Base Camp':
-    WC('Panchachuli_peaks_Munsiyari.jpg'),
-  'Adi Kailash & Om Parvat':
-    WC('Om_Parvat_Pithoragarh.jpg'),
+  'Kedarkantha':                          V[12],
+  'Har Ki Dun':                           V[13],
+  'Valley of Flowers & Hemkund Sahib':    V[14],
+  'Roopkund':                             V[15],
+  'Kuari Pass':                           V[16],
+  'Brahmatal':                            V[17],
+  'Dayara Bugyal':                        V[12],
+  'Deoriatal Chandrashila':               V[14],
+  'Nag Tibba':                            V[13],
+  'Gaumukh Tapovan':                      V[16],
+  'Kedartal':                             V[15],
+  'Bali Pass':                            V[17],
+  'Phulara Ridge':                        V[12],
+  'Pindari Glacier':                      V[16],
+  'Kafni Glacier':                        V[15],
+  'Milam Glacier':                        V[17],
+  'Satopanth Tal':                        V[14],
+  'Chopta Chandrashila (Tungnath)':       V[13],
+  'Gidara Bugyal':                        V[12],
+  'Panchachuli Base Camp':                V[17],
+  'Adi Kailash & Om Parvat':              V[16],
 
   // ── India · Himachal Pradesh ─────────────────────────────────────────────
-  'Hampta Pass':
-    WC('Hampta_pass.jpg'),
-  'Bhrigu Lake':
-    WC('Bhrigu_Lake_by_Ahmad_Faiz_Mustafa_%283%29.jpg'),
-  'Beas Kund':
-    WC('Beas_Kund_Manali.jpg'),
-  'Pin Parvati Pass':
-    WC('Pin_Parvati_Pass_Kullu.jpg'),
-  'Buran Ghati':
-    WC('Buran_Ghati_Pass_Himachal.jpg'),
-  'Rupin Pass':
-    WC('Rupin_Pass_Uttarakhand.jpg'),
-  'Sar Pass':
-    WC('Sar_Pass_Trek_Himachal.jpg'),
-  'Indrahar Pass':
-    WC('Indrahar_Pass_Dhauladhar.jpg'),
-  'Triund':
-    WC('Triund_Dharamshala_Himachal.jpg'),
-  'Kheerganga':
-    WC('Kheerganga_Parvati_Valley.jpg'),
-  'Chanderkhani Pass':
-    WC('Chanderkhani_Pass_Kullu.jpg'),
-  'Pin Bhaba Pass':
-    WC('Pin_Bhaba_Pass_Himachal.jpg'),
-  'Miyar Valley':
-    WC('Miyar_Valley_Lahaul.jpg'),
-  'Prashar Lake':
-    WC('Prashar_Lake_Mandi.jpg'),
-  'Kinnaur Kailash (Charang La)':
-    WC('Kinnaur_Kailash_Peak.jpg'),
-  'Bara Bhangal':
-    WC('Bara_Bhangal_Kangra.jpg'),
-  'Kareri Lake':
-    WC('Kareri_Lake_Dhauladhar.jpg'),
-  'Malana Village Trail':
-    WC('Malana_Village_Kullu.jpg'),
+  'Hampta Pass':                          V[18],
+  'Bhrigu Lake':                          V[19],
+  'Beas Kund':                            V[18],
+  'Pin Parvati Pass':                     V[20],
+  'Buran Ghati':                          V[19],
+  'Rupin Pass':                           V[18],
+  'Sar Pass':                             V[20],
+  'Indrahar Pass':                        V[19],
+  'Triund':                               V[18],
+  'Kheerganga':                           V[20],
+  'Chanderkhani Pass':                    V[19],
+  'Pin Bhaba Pass':                       V[20],
+  'Miyar Valley':                         V[18],
+  'Prashar Lake':                         V[19],
+  'Kinnaur Kailash (Charang La)':         V[20],
+  'Bara Bhangal':                         V[18],
+  'Kareri Lake':                          V[19],
+  'Malana Village Trail':                 V[20],
 
   // ── India · Ladakh & Kashmir ─────────────────────────────────────────────
-  'Chadar Trek (Frozen Zanskar)':
-    WC('Fields_Zangla_Zanskar_River_Ladakh_Jun24_A7CR_00981.jpg'),
-  'Markha Valley':
-    WC('The_View_From_the_Lookout_Point_%2848994220387%29.jpg'),
-  'Kashmir Great Lakes':
-    WC('Kashmir_Great_Lakes_Trek.jpg'),
-  'Tarsar Marsar':
-    WC('Tarsar_Lake_Kashmir.jpg'),
-  'Sham Valley (Baby Trek)':
-    WC('Sham_valley_ladakh.jpg'),
-  'Lamayuru to Alchi':
-    WC('Lamayuru_Monastery_Ladakh.jpg'),
-  'Rumtse to Tso Moriri':
-    WC('Tso_Moriri_Lake_Ladakh.jpg'),
-  'Kolahoi Base Camp':
-    WC('Kolahoi_Glacier_Kashmir.jpg'),
-  'Warwan Valley':
-    WC('Warwan_Valley_Kashmir.jpg'),
-  'Stok Village to Stok La':
-    WC('Stok_Kangri_Ladakh.jpg'),
+  'Chadar Trek (Frozen Zanskar)':         V[21],
+  'Markha Valley':                        V[22],
+  'Kashmir Great Lakes':                  V[21],
+  'Tarsar Marsar':                        V[22],
+  'Sham Valley (Baby Trek)':              V[23],
+  'Lamayuru to Alchi':                    V[21],
+  'Rumtse to Tso Moriri':                 V[23],
+  'Kolahoi Base Camp':                    V[22],
+  'Warwan Valley':                        V[21],
+  'Stok Village to Stok La':              V[22],
 
   // ── India · Sikkim & Northeast ───────────────────────────────────────────
-  'Goecha La':
-    WC('Goechala_Sikkim.jpg'),
-  'Dzongri Trek':
-    WC('Dzongri_Sikkim.jpg'),
-  'Sandakphu-Phalut (Singalila Ridge)':
-    WC('Kangchenjunga_%28Kanchenjunga%29_from_Singalila_National_Park%2C_Sandakphu.jpg'),
-  'Sandakphu via Gurdum (Short)':
-    WC('Everest_from_Sandakphu.jpg'),
-  'Green Lake (Zemu Glacier)':
-    WC('Zemu_Glacier_Sikkim.jpg'),
-  'Dzukou Valley':
-    WC('Dzukou_Valley_Nagaland.jpg'),
+  'Goecha La':                            V[24],
+  'Dzongri Trek':                         V[10],
+  'Sandakphu-Phalut (Singalila Ridge)':   V[24],
+  'Sandakphu via Gurdum (Short)':         V[24],
+  'Green Lake (Zemu Glacier)':            V[10],
+  'Dzukou Valley':                        V[14],
 
   // ── India · South / Western Ghats ────────────────────────────────────────
-  'Kudremukh':
-    WC('Kudremukh_peak_Karnataka.jpg'),
-  'Kumara Parvatha':
-    WC('Kumara_Parvatha_trek_Karnataka.jpg'),
-  'Harishchandragad':
-    WC('Harishchandragad_fort_Maharashtra.jpg'),
-  'Rajmachi':
-    WC('Rajmachi_Fort_Maharashtra.jpg'),
-  'Chembra Peak':
-    WC('Chembra_Peak_Wayanad.jpg'),
+  'Kudremukh':                            V[16],
+  'Kumara Parvatha':                      V[14],
+  'Harishchandragad':                     V[17],
+  'Rajmachi':                             V[12],
+  'Chembra Peak':                         V[15],
 };
 
-const FALLBACK = WC('Dughla_Pass%2C_Sagarmatha_National_Park%2C_Nepal.jpg');
+const FALLBACK = V[2];
 
 function parseCsv(text) {
   const rows = [];

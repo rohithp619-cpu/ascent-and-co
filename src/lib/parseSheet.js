@@ -6,10 +6,10 @@ const WC = (f) => `https://commons.wikimedia.org/wiki/Special:FilePath/${f}?widt
 
 // 25 verified Wikimedia Commons images (confirmed to exist)
 const V = [
-  WC('Kala_patthar_view_of_everest.jpg'),                                                // 0
+  WC('Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg'),                 // 0
   WC('Gokyo_Lake%2C_Arakamtse%2C_Cholatse%2C_Nepal%2C_Himalayas.jpg'),                  // 1
   WC('Dughla_Pass%2C_Sagarmatha_National_Park%2C_Nepal.jpg'),                            // 2
-  WC('Tengboche_monastery_with_Ama_Dablam_%28cropped%29.jpg'),                           // 3
+  WC('Ama_Dablam_from_Dingboche.jpg'),                                                   // 3
   WC('Muktinath_Valley%2C_View_of_Thorong_La_Pass%2C_Mountains%2C_Nepal.jpg'),           // 4
   WC('Machapucharebasecamp.jpg'),                                                        // 5
   WC('Yak_in_Langtang_Valley.jpg'),                                                     // 6

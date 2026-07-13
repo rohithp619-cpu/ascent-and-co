@@ -33,10 +33,10 @@ export function CtaBand() {
         </div>
         <div className="flex flex-col sm:flex-row gap-3 shrink-0">
           <a
-            href="#matcher"
+            href="#/expeditions"
             className="text-[11px] font-bold uppercase tracking-widest bg-white text-ink px-6 py-3.5 rounded-full hover:bg-white/90 transition-all"
           >
-            Plan my expedition →
+            Browse expeditions →
           </a>
           <a
             href="#/chat?tab=advisor"

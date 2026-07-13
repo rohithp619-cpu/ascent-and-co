@@ -1,5 +1,19 @@
+import { useNavigate } from 'react-router-dom'
+
 export function SiteNav({ variant = "light" }) {
   const isDark = variant === "dark";
+  const navigate = useNavigate()
+
+  const goToSection = (id) => (e) => {
+    e.preventDefault()
+    const el = document.getElementById(id)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' })
+    } else {
+      navigate('/', { state: { scrollTo: id } })
+    }
+  }
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-40 px-6 md:px-8 py-5 flex items-center justify-between backdrop-blur-md ${
@@ -31,10 +45,10 @@ export function SiteNav({ variant = "light" }) {
         </span>
       </a>
       <div className="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-[0.2em]">
-        <a href="#services" className="hover:text-accent transition-colors">Services</a>
-        <a href="#process" className="hover:text-accent transition-colors">How it works</a>
+        <a href="#" onClick={goToSection('services')} className="hover:text-accent transition-colors">Services</a>
+        <a href="#" onClick={goToSection('process')} className="hover:text-accent transition-colors">How it works</a>
         <a href="#/guide" className="hover:text-accent transition-colors">Guide</a>
-        <a href="#treks" className="hover:text-accent transition-colors">Expeditions</a>
+        <a href="#/expeditions" className="hover:text-accent transition-colors">Expeditions</a>
         <a href="#/chat?tab=advisor" className="hover:text-accent transition-colors">AI Advisor</a>
       </div>
       <a

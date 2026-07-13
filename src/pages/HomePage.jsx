@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { SiteNav } from '../components/SiteNav'
 import { HimalayaHero } from '../components/HimalayaHero'
 import { ServicesGrid } from '../components/ServicesGrid'
@@ -11,6 +13,14 @@ import { SiteFooter } from '../components/SiteFooter'
 import { ChatDock } from '../components/ChatDock'
 
 export function HomePage({ treks, loading }) {
+  const location = useLocation()
+  useEffect(() => {
+    const target = location.state?.scrollTo
+    if (target) {
+      setTimeout(() => document.getElementById(target)?.scrollIntoView({ behavior: 'smooth' }), 80)
+    }
+  }, [location.state])
+
   return (
     <div className="min-h-screen bg-base text-ink selection:bg-accent/20">
       <SiteNav variant="dark" />

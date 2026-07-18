@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useConversations } from '../hooks/useConversations'
 import { streamChat } from '../lib/gemini'
+import { TrekWeatherBanner, TrekWeatherCard } from '../components/TrekWeatherBanner'
 
 // ─── Suggested questions ──────────────────────────────────────────────────────
 const GENERAL_SUGGESTIONS = [
@@ -302,7 +303,7 @@ function TrekPicker({ treks, onSelect, onCancel }) {
 }
 
 // ─── Welcome / empty state ────────────────────────────────────────────────────
-function WelcomeState({ type, trek, treks, suggestions, onSend, onPickTrek }) {
+function WelcomeState({ type, trek, treks, suggestions, onSend, onPickTrek, onOpenMap, onOpenTravel }) {
   if (type === 'trek' && !trek) {
     return <TrekPicker treks={treks} onSelect={onPickTrek} />
   }
@@ -310,14 +311,26 @@ function WelcomeState({ type, trek, treks, suggestions, onSend, onPickTrek }) {
     <div className="flex flex-col items-center justify-center h-full px-6 py-16 overflow-y-auto">
       <div className="w-full max-w-xl">
         {trek ? (
-          <div className="mb-8 p-4 bg-white border border-ink/8 rounded-2xl flex gap-4 items-center shadow-sm">
-            <div className="size-14 rounded-xl overflow-hidden shrink-0 bg-slate-alpine/20">
-              <img src={trek.image} alt={trek.name} className="w-full h-full object-cover" />
-            </div>
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-widest text-accent mb-1">Trek Advisor · Active Context</p>
-              <p className="text-lg font-extrabold tracking-tight text-ink">{trek.name}</p>
-              <p className="text-xs text-ink/50">{trek.region} · {trek.days} days · {trek.difficulty} · ${trek.priceUSD?.toLocaleString()}</p>
+          <div className="mb-8 space-y-3">
+            <TrekWeatherCard trek={trek} />
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={onOpenMap}
+                className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-ink text-white font-bold text-sm hover:bg-ink/80 transition-all shadow-lg group">
+                <svg viewBox="0 0 24 24" className="size-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+                  <line x1="9" y1="3" x2="9" y2="18" /><line x1="15" y1="6" x2="15" y2="21" />
+                </svg>
+                3D Route
+              </button>
+              <button
+                onClick={onOpenTravel}
+                className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl border border-ink/12 text-ink/60 font-bold text-sm hover:text-ink hover:border-accent/40 hover:bg-accent/4 transition-all group">
+                <svg viewBox="0 0 24 24" className="size-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z" />
+                </svg>
+                Plan Travel
+              </button>
             </div>
           </div>
         ) : (
@@ -343,18 +356,31 @@ function WelcomeState({ type, trek, treks, suggestions, onSend, onPickTrek }) {
 }
 
 // ─── Messages ─────────────────────────────────────────────────────────────────
-function MessageList({ messages, trek, streamingId }) {
+function MessageList({ messages, trek, streamingId, onOpenMap, onOpenTravel }) {
   const bottomRef = useRef(null)
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
 
   return (
     <div className="flex-1 overflow-y-auto px-4 md:px-8 py-6 space-y-6">
       {trek && (
-        <div className="flex items-center gap-3 p-3 bg-accent/5 border border-accent/15 rounded-xl">
-          <div className="size-9 rounded-lg overflow-hidden shrink-0"><img src={trek.image} alt={trek.name} className="w-full h-full object-cover" /></div>
-          <div>
-            <p className="font-mono text-[9px] uppercase tracking-widest text-accent">Trek Advisor Context</p>
-            <p className="text-sm font-bold text-ink">{trek.name} · {trek.region} · {trek.days}d</p>
+        <div className="space-y-2">
+          <TrekWeatherBanner trek={trek} />
+          <div className="grid grid-cols-2 gap-2">
+            <button onClick={onOpenMap}
+              className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white border border-ink/8 text-ink/60 hover:text-ink hover:border-accent/40 hover:bg-accent/3 transition-all text-xs font-semibold group shadow-sm">
+              <svg viewBox="0 0 24 24" className="size-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+                <line x1="9" y1="3" x2="9" y2="18" /><line x1="15" y1="6" x2="15" y2="21" />
+              </svg>
+              3D Route
+            </button>
+            <button onClick={onOpenTravel}
+              className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white border border-ink/8 text-ink/60 hover:text-ink hover:border-accent/40 hover:bg-accent/3 transition-all text-xs font-semibold group shadow-sm">
+              <svg viewBox="0 0 24 24" className="size-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z" />
+              </svg>
+              Plan Travel
+            </button>
           </div>
         </div>
       )}
@@ -429,7 +455,7 @@ function ChatInput({ onSend, streaming, disabled }) {
 }
 
 // ─── ChatPage ─────────────────────────────────────────────────────────────────
-export function ChatPage({ treks, loading: treksLoading }) {
+export function ChatPage({ treks, itineraries = {}, loading: treksLoading }) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
@@ -516,7 +542,7 @@ export function ChatPage({ treks, loading: treksLoading }) {
 
     try {
       let full = ''
-      for await (const delta of streamChat(history, text, treks, focusTrek)) {
+      for await (const delta of streamChat(history, text, treks, focusTrek, itineraries)) {
         full += delta
         updateLastMessage(id, full)
       }
@@ -589,12 +615,16 @@ export function ChatPage({ treks, loading: treksLoading }) {
               type={tab} trek={activeTrek} treks={treks} suggestions={suggestions}
               onSend={(text) => handleSend(text)}
               onPickTrek={pickTrek}
+              onOpenMap={() => activeTrek && navigate(`/trek/${activeTrek.slug}/map`)}
+              onOpenTravel={() => activeTrek && navigate(`/trek/${activeTrek.slug}/travel`)}
             />
           ) : (
             <MessageList
               messages={activeConversation?.messages ?? []}
               trek={activeTrek}
               streamingId={streamingMsgIdx}
+              onOpenMap={() => activeTrek && navigate(`/trek/${activeTrek.slug}/map`)}
+              onOpenTravel={() => activeTrek && navigate(`/trek/${activeTrek.slug}/travel`)}
             />
           )}
 

@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { parseSheetRows, SHEET_CSV_URL } from '../lib/parseSheet';
+import { parseSheetRows, parseItineraryRows, SHEET_CSV_URL, ITINERARY_CSV_URL } from '../lib/parseSheet';
 
 const POLL_INTERVAL_MS = 30_000;
 
 export function useSheetData() {
   const [treks, setTreks] = useState([]);
+  const [itineraries, setItineraries] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
@@ -16,11 +17,16 @@ export function useSheetData() {
     abortRef.current = controller;
 
     try {
-      const res = await fetch(SHEET_CSV_URL, { signal: controller.signal });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const text = await res.text();
-      const parsed = parseSheetRows(text);
-      setTreks(parsed);
+      const [treksRes, itinRes] = await Promise.all([
+        fetch(SHEET_CSV_URL, { signal: controller.signal }),
+        fetch(ITINERARY_CSV_URL, { signal: controller.signal }),
+      ]);
+      if (!treksRes.ok) throw new Error(`Treks sheet: HTTP ${treksRes.status}`);
+
+      const [treksText, itinText] = await Promise.all([treksRes.text(), itinRes.ok ? itinRes.text() : Promise.resolve('')]);
+
+      setTreks(parseSheetRows(treksText));
+      if (itinText) setItineraries(parseItineraryRows(itinText));
       setError(null);
       setLastUpdated(new Date());
     } catch (err) {
@@ -39,5 +45,5 @@ export function useSheetData() {
     };
   }, []);
 
-  return { treks, loading, error, lastUpdated, refetch: fetchData };
+  return { treks, itineraries, loading, error, lastUpdated, refetch: fetchData };
 }

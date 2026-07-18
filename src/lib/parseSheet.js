@@ -1,5 +1,6 @@
 const SHEET_ID = '1ySsC6E2fw0I9l8_gOeE1DKAR9hNHRIs9qvgSyrlW0YE';
 export const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
+export const ITINERARY_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Day-by-Day%20Itinerary`;
 
 // Wikimedia Commons Special:FilePath — resolves to actual file by name
 const WC = (f) => `https://commons.wikimedia.org/wiki/Special:FilePath/${f}?width=1200`
@@ -267,6 +268,46 @@ export function parseSheetRows(csvText) {
       image: IMAGE_MAP[name] || FALLBACK,
     };
   });
+}
+
+// ─── Itinerary parser ─────────────────────────────────────────────────────────
+// Returns { [trekId]: [{ day, title, description, distanceKm, maxAltM, meals, accommodation }] }
+export function parseItineraryRows(csvText) {
+  const rows = parseCsv(csvText);
+  if (rows.length < 2) return {};
+
+  const headers = rows[0].map((h) => h.trim().toLowerCase());
+
+  function col(...keywords) {
+    return headers.findIndex((h) => keywords.some((k) => h.includes(k)));
+  }
+
+  const trekIdIdx    = col('trek id', 'trek_id');
+  const dayIdx       = col('day number', 'day no', 'day');
+  const titleIdx     = col('title', 'route', 'location', 'stage');
+  const descIdx      = col('description', 'detail', 'activity', 'overview');
+  const distIdx      = col('distance');
+  const altIdx       = col('altitude', 'elevation', 'max alt');
+  const mealsIdx     = col('meals', 'meal');
+  const accomIdx     = col('accommodation', 'lodging', 'stay');
+
+  const result = {};
+  for (const row of rows.slice(1)) {
+    const trekId = trekIdIdx >= 0 ? row[trekIdIdx]?.trim() : '';
+    if (!trekId) continue;
+    if (!result[trekId]) result[trekId] = [];
+
+    result[trekId].push({
+      day:           dayIdx  >= 0 ? (parseInt(row[dayIdx],  10) || result[trekId].length + 1) : result[trekId].length + 1,
+      title:         titleIdx >= 0 ? row[titleIdx]?.trim()  : '',
+      description:   descIdx  >= 0 ? row[descIdx]?.trim()   : '',
+      distanceKm:    distIdx  >= 0 ? row[distIdx]?.trim()   : '',
+      maxAltM:       altIdx   >= 0 ? row[altIdx]?.trim()    : '',
+      meals:         mealsIdx >= 0 ? row[mealsIdx]?.trim()  : '',
+      accommodation: accomIdx >= 0 ? row[accomIdx]?.trim()  : '',
+    });
+  }
+  return result;
 }
 
 export const allSeasons = ['Spring', 'Summer', 'Autumn', 'Winter'];

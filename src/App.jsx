@@ -4,17 +4,21 @@ import { HomePage } from './pages/HomePage'
 import { ChatPage } from './pages/ChatPage'
 import { GuidePage } from './pages/GuidePage'
 import { ExpeditionsPage } from './pages/ExpeditionsPage'
+import { TrekMapPage } from './pages/TrekMapPage'
+import { TravelPlannerPage } from './pages/TravelPlannerPage'
 
 export default function App() {
-  const { treks, loading, error, lastUpdated } = useSheetData()
+  const { treks, itineraries, loading, error, lastUpdated } = useSheetData()
 
   return (
     <>
       <Routes>
         <Route path="/" element={<HomePage treks={treks} loading={loading} />} />
-        <Route path="/chat" element={<ChatPage treks={treks} loading={loading} />} />
+        <Route path="/chat" element={<ChatPage treks={treks} itineraries={itineraries} loading={loading} />} />
         <Route path="/guide" element={<GuidePage />} />
         <Route path="/expeditions" element={<ExpeditionsPage treks={treks} loading={loading} />} />
+        <Route path="/trek/:slug/map" element={<TrekMapPage treks={treks} />} />
+        <Route path="/trek/:slug/travel" element={<TravelPlannerPage treks={treks} />} />
       </Routes>
 
       {/* Global sync indicator — only on home page */}

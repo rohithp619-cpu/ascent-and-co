@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { allDifficulties, allSeasons, matchTreks } from "../lib/parseSheet";
 
 const DURATIONS = [
@@ -183,21 +184,61 @@ export function TrekMatcher({ treks = [], loading = false }) {
                       >
                         View Full Itinerary →
                       </a>
+                      <div className="mt-2 grid grid-cols-2 gap-2">
+                        <Link
+                          to={`/trek/${top.slug}/map`}
+                          className="flex items-center justify-center gap-2 py-3.5 border border-ink/12 rounded-xl text-xs font-bold uppercase tracking-widest text-ink/50 hover:text-ink hover:border-accent/50 hover:bg-accent/4 transition-all group/map"
+                        >
+                          <svg viewBox="0 0 24 24" className="size-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+                            <line x1="9" y1="3" x2="9" y2="18" /><line x1="15" y1="6" x2="15" y2="21" />
+                          </svg>
+                          3D Route
+                        </Link>
+                        <Link
+                          to={`/trek/${top.slug}/travel`}
+                          className="flex items-center justify-center gap-2 py-3.5 border border-ink/12 rounded-xl text-xs font-bold uppercase tracking-widest text-ink/50 hover:text-ink hover:border-accent/50 hover:bg-accent/4 transition-all group/travel"
+                        >
+                          <svg viewBox="0 0 24 24" className="size-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z" />
+                          </svg>
+                          Plan Travel
+                        </Link>
+                      </div>
                     </div>
                   </div>
 
                   {results.slice(1).length > 0 && (
                     <div className="grid grid-cols-2 gap-3">
                       {results.slice(1).map((t) => (
-                        <a
-                          key={t.slug}
-                          href={`/trek/${t.slug}`}
-                          className="p-4 rounded-2xl bg-base border border-ink/5 hover:border-accent transition-colors group"
-                        >
-                          <div className="font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-1">Alt Match</div>
-                          <div className="font-bold text-sm mb-1 group-hover:text-accent">{t.name}</div>
-                          <div className="text-xs text-ink/50">{t.days}d · {t.difficulty} · ${t.priceUSD.toLocaleString()}</div>
-                        </a>
+                        <div key={t.slug} className="p-4 rounded-2xl bg-base border border-ink/5 hover:border-accent/30 transition-colors flex flex-col gap-3">
+                          <a href={`/trek/${t.slug}`} className="group/card block">
+                            <div className="font-mono text-[9px] uppercase tracking-widest text-ink/40 mb-1">Alt Match</div>
+                            <div className="font-bold text-sm mb-1 group-hover/card:text-accent transition-colors">{t.name}</div>
+                            <div className="text-xs text-ink/50">{t.days}d · {t.difficulty} · ${t.priceUSD.toLocaleString()}</div>
+                          </a>
+                          <div className="grid grid-cols-2 gap-1.5">
+                            <Link
+                              to={`/trek/${t.slug}/map`}
+                              className="flex items-center justify-center gap-1 py-2 rounded-lg border border-ink/10 text-[10px] font-semibold text-ink/40 hover:text-ink hover:border-accent/40 hover:bg-accent/4 transition-all"
+                            >
+                              <svg viewBox="0 0 24 24" className="size-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+                                <line x1="9" y1="3" x2="9" y2="18" /><line x1="15" y1="6" x2="15" y2="21" />
+                              </svg>
+                              Route
+                            </Link>
+                            <Link
+                              to={`/trek/${t.slug}/travel`}
+                              className="flex items-center justify-center gap-1 py-2 rounded-lg border border-ink/10 text-[10px] font-semibold text-ink/40 hover:text-ink hover:border-accent/40 hover:bg-accent/4 transition-all"
+                            >
+                              <svg viewBox="0 0 24 24" className="size-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z" />
+                              </svg>
+                              Travel
+                            </Link>
+                          </div>
+                        </div>
                       ))}
                     </div>
                   )}

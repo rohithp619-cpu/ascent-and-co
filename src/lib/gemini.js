@@ -18,8 +18,26 @@ function buildCatalogue(treks) {
   return `${header}\n${treks.map(compactRow).join('\n')}`
 }
 
+// Format day-by-day itinerary compactly for the prompt
+function buildItineraryBlock(trek, itineraries) {
+  const days = itineraries[trek.trekId]
+  if (!days || days.length === 0) return ''
+
+  const lines = days.map((d) => {
+    const parts = [`Day ${d.day}: ${d.title}`]
+    if (d.distanceKm) parts.push(`${d.distanceKm}km`)
+    if (d.maxAltM) parts.push(`${d.maxAltM}m`)
+    if (d.meals) parts.push(`meals:${d.meals}`)
+    if (d.accommodation) parts.push(`stay:${d.accommodation}`)
+    if (d.description) parts.push(`— ${d.description}`)
+    return parts.join(' | ')
+  })
+
+  return `\n## Day-by-Day Itinerary\n${lines.join('\n')}`
+}
+
 // For Trek Advisor: full focus detail + only similar treks for comparison (no full 99-trek dump)
-function buildFocusBlock(trek, allTreks) {
+function buildFocusBlock(trek, allTreks, itineraries = {}) {
   const similar = allTreks
     .filter((t) => t.slug !== trek.slug && (t.country === trek.country || t.region === trek.region))
     .slice(0, 8)
@@ -33,15 +51,15 @@ Weather: ${trek.weather} | Temp: ${trek.tempRange}
 Prices: $${trek.priceBudget} budget / $${trek.priceUSD} standard / $${trek.priceLuxury} luxury
 Stay: ${trek.accommodation} | Permits: ${trek.permits}
 Highlights: ${trek.highlights?.join('; ')}
-
+${buildItineraryBlock(trek, itineraries)}
 ## Similar treks for comparison
 # name|country|region|days|maxAlt|diff|fitness|seasons|stdPrice
 ${similar.join('\n')}`
 }
 
-function buildSystemPrompt(treks, focusTrek = null) {
+function buildSystemPrompt(treks, focusTrek = null, itineraries = {}) {
   const catalogue = focusTrek
-    ? buildFocusBlock(focusTrek, treks)
+    ? buildFocusBlock(focusTrek, treks, itineraries)
     : buildCatalogue(treks)
 
   return `You are Basecamp AI, a Himalayan trek advisor for Ascent & Co. Be warm, concise, and factual. Use metric units.
@@ -73,7 +91,7 @@ Format rules:
  * @param {object} focusTrek Optional trek context
  * @yields {string} Text deltas
  */
-export async function* streamChat(history, userText, treks, focusTrek = null) {
+export async function* streamChat(history, userText, treks, focusTrek = null, itineraries = {}) {
   if (!API_KEY) throw new Error('VITE_GEMINI_API_KEY is not set in .env')
   if (treks.length === 0) throw new Error('Trek catalogue is still loading — try again in a moment.')
 
@@ -89,7 +107,7 @@ export async function* streamChat(history, userText, treks, focusTrek = null) {
   ]
 
   const body = {
-    system_instruction: { parts: [{ text: buildSystemPrompt(treks, focusTrek) }] },
+    system_instruction: { parts: [{ text: buildSystemPrompt(treks, focusTrek, itineraries) }] },
     contents,
     generationConfig: { maxOutputTokens: 400 },
   }
